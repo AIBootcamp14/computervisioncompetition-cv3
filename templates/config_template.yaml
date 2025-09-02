@@ -1,0 +1,149 @@
+# 🔧 실험 설정 템플릿
+# 이 파일을 복사하여 자신만의 설정을 만드세요
+
+# 실험 정보
+experiment:
+  name: "jaehong_resnet50_baseline"  # 실험명 (이름_ 접두사 사용)
+  description: "ResNet50 기반 베이스라인 모델"
+  tags: ["jaehong", "resnet50", "baseline"]  # jaehong, dongjun, junyoung, yeeun
+  
+# wandb 설정
+wandb:
+  project: "doc-classification"
+  entity: "your-team"  # wandb 팀명으로 변경
+  offline: false  # 오프라인 모드 여부
+
+# 데이터 설정
+data:
+  train_csv: "../data/train.csv"
+  meta_csv: "../data/meta.csv"
+  train_dir: "../data/train"
+  test_dir: "../data/test"
+  
+  # 데이터 분할
+  val_ratio: 0.2
+  stratify: true
+  random_state: 42
+  
+  # 이미지 설정
+  image_size: [224, 224]  # [height, width]
+  channels: 3
+  
+  # 정규화 (ImageNet 기본값)
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# 데이터 증강
+augmentation:
+  # 증강 강도: light, medium, heavy, document_specific
+  strategy: "medium"
+  
+  # 개별 증강 설정
+  horizontal_flip: 0.5
+  rotation_limit: 10
+  brightness_contrast: 0.2
+  gaussian_noise: 0.1
+  
+  # TTA (Test Time Augmentation)
+  use_tta: false
+  tta_crops: 5
+
+# 모델 설정
+model:
+  # 아키텍처
+  architecture: "resnet50"  # resnet50, efficientnet_b0, vit_base 등
+  pretrained: true
+  num_classes: 17
+  
+  # 모델별 세부 설정
+  dropout_rate: 0.3
+  freeze_backbone: false  # 전이학습 시 백본 동결 여부
+
+# 학습 설정
+training:
+  # 기본 설정
+  batch_size: 32
+  epochs: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  
+  # 옵티마이저
+  optimizer: "adam"  # adam, sgd, adamw
+  momentum: 0.9  # SGD 사용 시
+  
+  # 손실 함수
+  loss_function: "cross_entropy"  # cross_entropy, focal_loss, label_smoothing
+  label_smoothing: 0.1  # label smoothing 사용 시
+  
+  # 스케줄러
+  scheduler: "cosine"  # step, cosine, plateau
+  step_size: 10  # StepLR 사용 시
+  gamma: 0.1     # StepLR 사용 시
+  patience: 5    # ReduceLROnPlateau 사용 시
+  
+  # 클래스 불균형 처리
+  use_class_weights: true
+  focal_loss_alpha: 1.0  # Focal Loss 사용 시
+  focal_loss_gamma: 2.0  # Focal Loss 사용 시
+
+# 검증 설정
+validation:
+  # 교차 검증
+  use_kfold: false
+  n_splits: 5
+  
+  # 조기 종료
+  early_stopping: true
+  patience: 10
+  monitor: "val_f1"  # val_loss, val_acc, val_f1
+  mode: "max"  # min (loss), max (acc, f1)
+  
+  # 평가 메트릭
+  metrics: ["accuracy", "f1", "precision", "recall"]
+
+# 체크포인트 및 저장
+checkpoint:
+  # 모델 저장
+  save_best: true
+  save_last: true
+  save_top_k: 3
+  
+  # 저장 경로
+  model_dir: "models/"
+  log_dir: "logs/"
+  
+  # 저장 조건
+  monitor: "val_f1"
+  mode: "max"
+
+# 하드웨어 설정
+hardware:
+  # GPU 설정
+  device: "auto"  # auto, cpu, cuda:0
+  num_workers: 4
+  pin_memory: true
+  
+  # 혼합 정밀도
+  use_amp: false  # Automatic Mixed Precision
+  
+  # 배치 누적 (메모리 부족 시)
+  accumulate_grad_batches: 1
+
+# 시드 설정 (재현성)
+seed: 42
+
+# 로깅 설정
+logging:
+  # 로그 레벨
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  
+  # 로그 빈도
+  log_every_n_steps: 10
+  
+  # 이미지 로깅
+  log_images: true
+  max_images: 16
+  
+  # 모델 그래프 로깅
+  log_model: false

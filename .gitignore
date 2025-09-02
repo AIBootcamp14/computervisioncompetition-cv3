@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# 가상환경
+venv/
+env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 데이터 파일 (용량 큰 파일들)
+data/train/
+data/test/
+# *.csv  # 라벨 파일은 포함
+# *.json # 설정 파일은 포함
+*.pkl
+*.pickle
+
+# 모델 가중치 (Git LFS로 관리)
+*.pth
+*.pt
+*.ckpt
+
+# 로그 및 결과
+*.log
+wandb/
+runs/
+mlruns/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 임시 파일
+temp/
+tmp/
+cache/
+
+# 워크스페이스 폴더 제외 항목
+workspaces/*/logs/wandb/
+workspaces/*/logs/*.log
+workspaces/*/models/*.pth
+workspaces/*/models/*.pt
+workspaces/*/models/*.ckpt
+workspaces/*/configs/personal_*.yaml
+workspaces/*/configs/api_keys.yaml
+
+# 공유 폴더 대용량 파일
+shared/best_models/*.pth
+shared/ensemble_results/*.pkl
+
+# 베이스라인 코드 (저작권)
+shared/baseline_code.ipynb
+
+# IDE 추가
+*.sublime-*
+.vscode/settings.json

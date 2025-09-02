@@ -1,0 +1,28 @@
+# 멤버별 작업 폴더에 추가할 .gitignore 내용
+
+# 실험 결과
+*/logs/*.log
+*/logs/wandb/
+*/models/*.pth
+*/models/*.pt
+*/models/*.ckpt
+
+# 임시 파일
+*/notebooks/.ipynb_checkpoints/
+*/__pycache__/
+*/temp/
+*/cache/
+
+# 개인 설정
+*/configs/personal_*.yaml
+*/configs/api_keys.yaml
+
+# 대용량 파일
+*.zip
+*.tar.gz
+*.pkl
+*.pickle
+
+# OS 파일
+.DS_Store
+Thumbs.db
