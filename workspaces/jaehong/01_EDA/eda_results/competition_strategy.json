@@ -1,0 +1,39 @@
+{
+  "augmentation": [
+    "RandomRotation(degrees=(-30, 30)) - Test 데이터 회전 대응",
+    "RandomBrightnessContrast(brightness_limit=0.3, contrast_limit=0.3)",
+    "GaussianNoise(var_limit=(10, 50)) - Test 노이즈 대응",
+    "MotionBlur(blur_limit=3) + GaussianBlur(blur_limit=3)",
+    "RandomPerspective(distortion_scale=0.1) - 문서 왜곡 시뮬레이션",
+    "Cutout(num_holes=1, max_h_size=32, max_w_size=32) - 부분 가림 대응",
+    "MixUp(alpha=0.2) - 클래스 불균형 완화",
+    "CutMix(alpha=1.0) - 소수 클래스 증강"
+  ],
+  "model_architecture": [
+    "EfficientNetV2-S/M - 문서 분류에 최적화된 아키텍처",
+    "ConvNeXt-Tiny/Small - 최신 CNN 아키텍처",
+    "Swin Transformer-Tiny - Vision Transformer 옵션",
+    "Multi-scale Input (448x448, 512x512, 576x576)",
+    "Focal Loss - 클래스 불균형 대응",
+    "Label Smoothing (0.1) - 과적합 방지",
+    "Dropout 강화 (0.3-0.5) - 일반화 성능 향상"
+  ],
+  "training": [
+    "Stratified 5-Fold Cross Validation",
+    "AdamW Optimizer (lr=1e-4, weight_decay=1e-2)",
+    "CosineAnnealingWarmRestarts 스케줄러",
+    "Early Stopping (patience=5, monitor='val_f1')",
+    "Gradient Clipping (max_norm=1.0)",
+    "Mixed Precision Training (AMP)",
+    "Class Weights 적용 - 불균형 대응",
+    "Pseudo Labeling (confidence > 0.9) - 후반부 적용"
+  ],
+  "ensemble": [
+    "5-Fold 앙상블 (각 fold별 최고 성능 모델)",
+    "Multi-Architecture 앙상블 (EfficientNet + ConvNeXt + Swin)",
+    "TTA (Test Time Augmentation): 회전, 플립, 스케일링",
+    "Soft Voting - 확률 평균으로 최종 예측",
+    "Confidence-based Weighted Voting",
+    "Private LB 안정성을 위한 Conservative 앙상블"
+  ]
+}
