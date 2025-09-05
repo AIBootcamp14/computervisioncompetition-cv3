@@ -17,11 +17,11 @@ PyTorch 및 [timm](https://github.com/huggingface/pytorch-image-models) 라이�
 
 ## 🚀 Features
 
-* ✅ **ResNet 기반 분류 모델** (timm 라이브러리 활용)
+* ✅ **여러 모델 이용하여 분류** (timm 라이브러리 활용)
 * ✅ **Albumentations 데이터 증강** 적용 (Normalize, Resize, Horizontal Flip 등)
 * ✅ **Stratified K-Fold** 교차검증 지원 (데이터 불균형 완화)
 * ✅ **W\&B(Weights & Biases)** 연동 (로그 시각화 및 실험 관리)
-* ✅ **TTA(Test Time Augmentation)** 적용 가능
+* ✅ **TTA(Test Time Augmentation)** 적용 
 * ✅ **최종 결과를 CSV로 저장하여 제출 파일 생성**
 
 ---
@@ -41,8 +41,6 @@ pip install scikit-learn
 pip install pandas numpy tqdm
 pip install pillow
 ```
-
-또는 `requirements.txt`를 작성해 설치할 수 있습니다:
 
 ```bash
 pip install -r requirements.txt
@@ -84,13 +82,13 @@ pip install -r requirements.txt
 ### 5. 학습 (Training)
 
 * **손실 함수**: `nn.CrossEntropyLoss`
-* **옵티마이저**: `Adam` 또는 `AdamW`
+* **옵티마이저**: `AdamW`
 * **러닝 스케줄러**:
-
-  * `ReduceLROnPlateau` (성능 정체 시 LR 감소)
   * `CosineAnnealingWarmRestarts` (cosine 기반 주기적 warm restart)
+  * ReduceLROnPlateau는 학습률 감소가 잘 되지 않아서 사용하지 않음
 * **W\&B 연동**: 학습/검증 loss, accuracy, f1-score 로그 기록
 * Epoch 단위로 학습 진행 후 best 모델 저장
+* 3회 Trigger 기준으로 Early Stopping
 
 ### 6. 검증 (Validation)
 
@@ -102,7 +100,7 @@ pip install -r requirements.txt
 
 * 학습된 모델 가중치 로드
 * Test dataset에 대해 예측 수행
-* **TTA 적용 가능** (`ttach` 활용)
+* **TTA 적용** (`ttach` 활용)
 * 최종 결과를 `submission.csv`로 저장 (id, label 형식)
 
 ---
@@ -147,14 +145,11 @@ id,label
 
 ## 🔧 To Do / Customization
 
-* [ ] 다른 백본 모델 실험 (EfficientNet, ConvNeXt, Swin Transformer)
+* [ ] 데이터 전처리 방법 고민 (점수가 오히려 낮아져서 주석처리)
 * [ ] 데이터 증강 기법 확장 (Rotation, RandomCrop, CutMix, Mixup)
 * [ ] 하이퍼파라미터 튜닝 (learning rate, batch size, optimizer 종류)
-* [ ] Ensemble 기법 적용 (Soft Voting, Weighted Average)
-* [ ] EarlyStopping 기능 추가
 
 ---
 
 ## 📜 License
 
-본 프로젝트의 코드는 대회 참여자들의 원활한 학습을 위해 제공되는 **baseline code**이며, 자유롭게 수정 및 활용 가능합니다.
