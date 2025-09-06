@@ -1,0 +1,21 @@
+{
+  "method": "improved_stacking",
+  "timestamp": "20250904_232440",
+  "meta_learner_scores": {
+    "xgboost": 0.2794815727218287,
+    "lightgbm": 0.27831019028728043,
+    "extra_trees": 0.2432464005172462
+  },
+  "best_meta_learner": "xgboost",
+  "improvements": [
+    "Reduced feature dimensions",
+    "Better pseudo labels",
+    "Feature selection",
+    "Quality sample filtering"
+  ],
+  "ensemble_stats": {
+    "mean_confidence": 0.546956479549408,
+    "std_confidence": 0.15928730368614197,
+    "high_confidence_ratio": 0.008598726114649681
+  }
+}
