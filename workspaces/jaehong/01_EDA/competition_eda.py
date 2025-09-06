@@ -389,6 +389,11 @@ class CompetitionEDA:
             # 7. 최종 전략 제안
             self._generate_competition_strategy()
             
+            # 8. 고급 전략 추가 (Multi-Modal, Advanced Augmentation, Pseudo Labeling)
+            self._advanced_multimodal_analysis()
+            self._advanced_augmentation_strategies()
+            self._pseudo_labeling_strategy()
+            
             print("\n=== ✅ EDA 분석 완료 ===")
             print(f"📁 모든 결과가 {self.output_dir}에 저장되었습니다.")
             
@@ -607,26 +612,23 @@ class CompetitionEDA:
         """Train/Test 데이터 차이 분석 (대회 핵심!)"""
         print("=== 🔍 3. Train/Test 차이 분석 (대회 핵심!) ===")
         
-        # 샘플링 (전체 분석은 시간이 오래 걸림)
+        # 전체 데이터 분석 (17개 클래스 완전 분석을 위해)
         train_paths = self.dataset_analyzer.get_image_paths('train')
         test_paths = self.dataset_analyzer.get_image_paths('test')
         
-        # 샘플 크기 설정
-        train_sample_size = min(300, len(train_paths))
-        test_sample_size = min(150, len(test_paths))
+        print(f"📊 전체 데이터 분석 (Train: {len(train_paths)}개, Test: {len(test_paths)}개)")
+        print(f"   클래스별 정확한 특성 파악을 위해 전체 데이터를 분석합니다.")
         
-        print(f"📊 샘플 분석 (Train: {train_sample_size}개, Test: {test_sample_size}개)")
+        # 전체 데이터 사용
+        train_sample = train_paths
+        test_sample = test_paths
         
-        # 랜덤 샘플링
-        train_sample = random.sample(train_paths, train_sample_size)
-        test_sample = random.sample(test_paths, test_sample_size)
+        # 이미지 분석 (병렬 처리 최적화)
+        print("🔄 Train 이미지 전체 분석 중... (시간이 소요될 수 있습니다)")
+        train_metrics = self.dataset_analyzer.analyze_images_batch(train_sample, max_workers=8)
         
-        # 이미지 분석
-        print("🔄 Train 이미지 분석 중...")
-        train_metrics = self.dataset_analyzer.analyze_images_batch(train_sample)
-        
-        print("🔄 Test 이미지 분석 중...")
-        test_metrics = self.dataset_analyzer.analyze_images_batch(test_sample)
+        print("🔄 Test 이미지 전체 분석 중... (시간이 소요될 수 있습니다)")
+        test_metrics = self.dataset_analyzer.analyze_images_batch(test_sample, max_workers=8)
         
         # 결과 비교
         self._compare_train_test_metrics(train_metrics, test_metrics)
@@ -709,40 +711,77 @@ class CompetitionEDA:
         print(f"📊 Train/Test 비교 차트 저장: {self.output_dir / 'train_test_comparison.png'}")
     
     def _generate_train_test_insights(self, train_df: pd.DataFrame, test_df: pd.DataFrame):
-        """Train/Test 차이 기반 대회 전략 인사이트"""
-        print(f"\n💡 대회 전략 인사이트:")
+        """Train/Test 차이 기반 성능 최적화 전략 (공격적 접근)"""
+        print(f"\n🎯 성능 최적화를 위한 Train/Test 차이 분석:")
         
-        # 회전 분석
+        # 회전 분석 - 적극 활용
         train_rotation_std = train_df['rotation_angle'].std()
         test_rotation_std = test_df['rotation_angle'].std()
         
         if test_rotation_std > train_rotation_std * 1.5:
-            print(f"  🔄 회전: Test 데이터의 회전이 더 다양함 (std: {test_rotation_std:.1f} vs {train_rotation_std:.1f})")
-            print(f"      → RandomRotation(degrees=(-30, 30)) 증강 필수!")
+            print(f"  🔄 회전: Test 데이터 회전이 더 다양함 (std: {test_rotation_std:.1f} vs {train_rotation_std:.1f})")
+            print(f"      → RandomRotation(degrees=(-45, 45)) 강화 적용!")
+            print(f"      → 회전 증강 확률 0.8로 증가!")
         
-        # 노이즈 분석
+        # 노이즈 분석 - 적극 활용
         train_noise_mean = train_df['noise_level'].mean()
         test_noise_mean = test_df['noise_level'].mean()
         
         if test_noise_mean > train_noise_mean * 1.2:
-            print(f"  🔊 노이즈: Test 데이터가 더 노이지함 ({test_noise_mean:.2f} vs {train_noise_mean:.2f})")
-            print(f"      → GaussianNoise, ISONoise 증강 추가!")
+            print(f"  🔊 노이즈: Test가 더 노이지함 ({test_noise_mean:.2f} vs {train_noise_mean:.2f})")
+            print(f"      → GaussianNoise(var_limit=(10, {int(test_noise_mean*2)})) 적용!")
+            print(f"      → 노이즈 증강 확률 0.6으로 증가!")
+        elif test_noise_mean < train_noise_mean * 0.8:
+            print(f"  🔇 노이즈: Test가 더 깨끗함 ({test_noise_mean:.2f} vs {train_noise_mean:.2f})")
+            print(f"      → 노이즈 증강 확률 0.2로 감소!")
         
-        # 선명도 분석
+        # 선명도 분석 - 적극 활용
         train_sharp_mean = train_df['sharpness'].mean()
         test_sharp_mean = test_df['sharpness'].mean()
         
         if test_sharp_mean < train_sharp_mean * 0.8:
-            print(f"  🌫️ 블러: Test 데이터가 더 흐림 ({test_sharp_mean:.1f} vs {train_sharp_mean:.1f})")
-            print(f"      → MotionBlur, GaussianBlur 증강 추가!")
+            print(f"  🌫️ 블러: Test가 더 흐림 ({test_sharp_mean:.1f} vs {train_sharp_mean:.1f})")
+            print(f"      → MotionBlur(blur_limit=7) + GaussianBlur(blur_limit=7) 강화!")
+            print(f"      → 블러 증강 확률 0.7로 증가!")
+            
+            # 구체적 타겟 설정
+            blur_ratio = train_sharp_mean / test_sharp_mean
+            print(f"      → 선명도 비율 {blur_ratio:.1f}배 차이를 보정하는 블러 적용!")
         
-        # 밝기 분석
+        # 밝기 분석 - 적극 활용
         train_bright_mean = train_df['brightness'].mean()
         test_bright_mean = test_df['brightness'].mean()
+        brightness_diff = test_bright_mean - train_bright_mean
         
-        if abs(test_bright_mean - train_bright_mean) > 10:
-            print(f"  💡 밝기: 차이 있음 ({test_bright_mean:.1f} vs {train_bright_mean:.1f})")
-            print(f"      → RandomBrightnessContrast 증강 필수!")
+        if abs(brightness_diff) > 10:
+            print(f"  💡 밝기: 큰 차이 발견 ({test_bright_mean:.1f} vs {train_bright_mean:.1f})")
+            
+            if brightness_diff > 0:
+                # Test가 더 밝음
+                brightness_adjustment = min(0.5, brightness_diff / 100)
+                print(f"      → Test 대응 밝기 증강: brightness_limit={brightness_adjustment:.2f}")
+                print(f"      → 밝은 이미지 생성 확률 증가!")
+            else:
+                # Test가 더 어두움  
+                brightness_adjustment = min(0.5, abs(brightness_diff) / 100)
+                print(f"      → Test 대응 어두운 증강: brightness_limit={brightness_adjustment:.2f}")
+                print(f"      → 어두운 이미지 생성 확률 증가!")
+        
+        # 대비 분석 - 적극 활용
+        train_contrast_mean = train_df['contrast'].mean()
+        test_contrast_mean = test_df['contrast'].mean()
+        contrast_diff = test_contrast_mean - train_contrast_mean
+        
+        if abs(contrast_diff) > 5:
+            contrast_adjustment = min(0.4, abs(contrast_diff) / 50)
+            print(f"  🌈 대비: Test 대응 조정 ({test_contrast_mean:.1f} vs {train_contrast_mean:.1f})")
+            print(f"      → contrast_limit={contrast_adjustment:.2f} 적용!")
+        
+        print(f"\n🚀 성능 최적화 전략:")
+        print(f"  • Test 통계를 직접 활용한 타겟팅 증강")
+        print(f"  • Train→Test 분포 변화 적극 보정")
+        print(f"  • 구체적 수치 기반 파라미터 최적화")
+        print(f"  • Domain Adaptation으로 Test 분포에 맞춤")
     
     def _detect_anomalous_images(self):
         """이질적 이미지 탐지 (차량 대시보드, 번호판 등)"""
@@ -935,18 +974,19 @@ class CompetitionEDA:
         """이미지 크기/종횡비 분석"""
         print("=== 📐 6. 이미지 크기/종횡비 분석 ===")
         
-        # 샘플 분석
+        # 전체 데이터 분석
         train_paths = self.dataset_analyzer.get_image_paths('train')
         test_paths = self.dataset_analyzer.get_image_paths('test')
         
-        train_sample = random.sample(train_paths, min(200, len(train_paths)))
-        test_sample = random.sample(test_paths, min(100, len(test_paths)))
+        train_sample = train_paths
+        test_sample = test_paths
         
-        print(f"📊 크기 분석 중... (Train: {len(train_sample)}개, Test: {len(test_sample)}개)")
+        print(f"📊 전체 크기 분석 중... (Train: {len(train_sample)}개, Test: {len(test_sample)}개)")
+        print(f"   17개 클래스 모든 이미지의 크기 특성을 완전 분석합니다.")
         
-        # 이미지 분석
-        train_metrics = self.dataset_analyzer.analyze_images_batch(train_sample)
-        test_metrics = self.dataset_analyzer.analyze_images_batch(test_sample)
+        # 이미지 분석 (병렬 처리 최적화)
+        train_metrics = self.dataset_analyzer.analyze_images_batch(train_sample, max_workers=8)
+        test_metrics = self.dataset_analyzer.analyze_images_batch(test_sample, max_workers=8)
         
         # 크기 통계
         self._analyze_dimension_statistics(train_metrics, test_metrics)
@@ -1277,6 +1317,754 @@ CLASS_WEIGHTS = {
             f.write(augmentation_code)
         
         print(f"💻 증강 코드 저장: {self.output_dir / 'augmentation_strategy.py'}")
+    
+    def _advanced_multimodal_analysis(self):
+        """고급 Multi-Modal 분석: 이미지 + 메타데이터 결합"""
+        print("\n=== 🔗 8-1. Multi-Modal 분석 ===")
+        
+        # 메타데이터 추출 및 분석
+        metadata_features = self._extract_metadata_features()
+        
+        # 이미지 특성과 메타데이터 상관관계 분석
+        correlations = self._analyze_image_metadata_correlation(metadata_features)
+        
+        # Multi-Modal 모델 아키텍처 제안
+        multimodal_architecture = self._design_multimodal_architecture(correlations)
+        
+        # 결과 저장
+        with open(self.output_dir / 'multimodal_strategy.json', 'w', encoding='utf-8') as f:
+            json.dump({
+                'metadata_features': metadata_features,
+                'correlations': correlations,
+                'architecture': multimodal_architecture
+            }, f, indent=2, ensure_ascii=False)
+        
+        print(f"🔗 Multi-Modal 전략 저장: {self.output_dir / 'multimodal_strategy.json'}")
+    
+    def _extract_metadata_features(self):
+        """메타데이터 특성 추출"""
+        print("📊 메타데이터 특성 추출 중...")
+        
+        train_df = self.dataset_analyzer.train_df
+        
+        # 파일명 패턴 분석
+        filename_patterns = {}
+        for idx, row in train_df.iterrows():
+            filename = row['ID']
+            # 파일명에서 패턴 추출
+            if '_' in filename:
+                parts = filename.replace('.jpg', '').split('_')
+                if len(parts) > 1:
+                    pattern = f"{len(parts)}_parts"
+                    filename_patterns[pattern] = filename_patterns.get(pattern, 0) + 1
+        
+        # 클래스별 특성
+        class_characteristics = {}
+        for target in range(17):
+            class_data = train_df[train_df['target'] == target]
+            class_name = self.dataset_analyzer.class_mapping[target]
+            
+            class_characteristics[target] = {
+                'name': class_name,
+                'count': len(class_data),
+                'avg_filename_length': class_data['ID'].str.len().mean(),
+                'has_underscore_ratio': (class_data['ID'].str.contains('_')).mean()
+            }
+        
+        return {
+            'filename_patterns': filename_patterns,
+            'class_characteristics': class_characteristics,
+            'total_samples': len(train_df)
+        }
+    
+    def _analyze_image_metadata_correlation(self, metadata_features):
+        """이미지 특성과 메타데이터 상관관계 분석"""
+        print("🔍 이미지-메타데이터 상관관계 분석 중...")
+        
+        # 클래스별 이미지 특성 요약
+        correlations = {}
+        
+        for target, char in metadata_features['class_characteristics'].items():
+            # 차량 관련 클래스 식별
+            is_vehicle = target in [2, 16]  # car_dashboard, vehicle_registration_plate
+            
+            correlations[target] = {
+                'class_name': char['name'],
+                'is_vehicle_related': is_vehicle,
+                'sample_count': char['count'],
+                'filename_complexity': char['avg_filename_length'],
+                'recommended_input_size': 640 if is_vehicle else 512,
+                'special_preprocessing': is_vehicle
+            }
+        
+        return correlations
+    
+    def _design_multimodal_architecture(self, correlations):
+        """Multi-Modal 모델 아키텍처 설계"""
+        print("🏗️ Multi-Modal 아키텍처 설계 중...")
+        
+        architecture = {
+            "image_branch": {
+                "backbone": "EfficientNetV2-S",
+                "input_sizes": [512, 640],  # 클래스별 다른 입력 크기
+                "feature_dim": 1280
+            },
+            "metadata_branch": {
+                "features": [
+                    "filename_length",
+                    "has_underscore", 
+                    "class_prior_probability",
+                    "image_aspect_ratio"
+                ],
+                "architecture": "MLP(4 -> 64 -> 32)",
+                "feature_dim": 32
+            },
+            "fusion_strategy": {
+                "method": "concatenation + attention",
+                "combined_dim": 1312,  # 1280 + 32
+                "fusion_layers": "Linear(1312 -> 512 -> 17)"
+            },
+            "training_strategy": {
+                "loss_weighting": "dynamic (0.8 * image_loss + 0.2 * metadata_loss)",
+                "separate_learning_rates": {
+                    "image_branch": 1e-4,
+                    "metadata_branch": 1e-3,
+                    "fusion_layer": 1e-3
+                }
+            }
+        }
+        
+        return architecture
+    
+    def _advanced_augmentation_strategies(self):
+        """고급 증강 전략: 클래스별 맞춤 증강 + Domain Adaptation"""
+        print("\n=== 🎨 8-2. 고급 증강 전략 ===")
+        
+        # 클래스별 맞춤 증강 전략
+        class_specific_aug = self._design_class_specific_augmentation()
+        
+        # Domain Adaptation 전략
+        domain_adaptation = self._design_domain_adaptation_strategy()
+        
+        # 고급 증강 코드 생성
+        self._generate_advanced_augmentation_code(class_specific_aug, domain_adaptation)
+        
+        print("🎨 클래스별 맞춤 증강 전략 완료")
+    
+    def _design_class_specific_augmentation(self):
+        """클래스별 맞춤 증강 설계"""
+        print("🎯 클래스별 맞춤 증강 설계 중...")
+        
+        strategies = {
+            "vehicle_classes": {
+                "classes": [2, 16],  # car_dashboard, vehicle_registration_plate
+                "strategy": {
+                    "brightness_adjustment": "강화 (Test 데이터가 더 어두움)",
+                    "perspective_transform": "감소 (이미 다양한 각도)",
+                    "noise_augmentation": "증가 (실제 촬영 환경 시뮬레이션)",
+                    "color_jittering": "강화 (다양한 조명 조건)"
+                }
+            },
+            "document_classes": {
+                "classes": [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                "strategy": {
+                    "rotation": "강화 (스캔 시 회전 발생)",
+                    "perspective": "강화 (문서 스캔 왜곡)",
+                    "blur": "추가 (Test 데이터가 더 흐림)",
+                    "contrast": "조정 (문서 품질 다양화)"
+                }
+            },
+            "minority_classes": {
+                "classes": [1, 13, 14],  # 샘플 수 적은 클래스
+                "strategy": {
+                    "mixup_alpha": 0.4,  # 더 강한 MixUp
+                    "cutmix_alpha": 1.2,  # 더 강한 CutMix
+                    "copy_paste": True,  # Copy-Paste 증강 추가
+                    "oversampling_factor": 2.0
+                }
+            }
+        }
+        
+        return strategies
+    
+    def _design_domain_adaptation_strategy(self):
+        """Domain Adaptation 전략 설계"""
+        print("🌐 Domain Adaptation 전략 설계 중...")
+        
+        # Train/Test 차이 기반 적응 전략
+        adaptation_strategy = {
+            "brightness_adaptation": {
+                "method": "Histogram Matching",
+                "target": "Test 데이터 평균 밝기 (172.2)",
+                "implementation": "A.HistogramMatching with reference images"
+            },
+            "sharpness_adaptation": {
+                "method": "Controlled Blurring", 
+                "target": "Test 데이터 선명도 (688.3)",
+                "implementation": "Progressive blur augmentation during training"
+            },
+            "noise_adaptation": {
+                "method": "Noise Injection Curriculum",
+                "schedule": "Start clean, gradually add noise to match Test",
+                "final_noise_level": 7.3
+            },
+            "progressive_adaptation": {
+                "epochs_1_10": "Standard augmentation",
+                "epochs_11_20": "Add brightness adaptation", 
+                "epochs_21_30": "Add blur adaptation",
+                "epochs_31_40": "Full domain adaptation"
+            }
+        }
+        
+        return adaptation_strategy
+    
+    def _generate_advanced_augmentation_code(self, class_specific, domain_adaptation):
+        """고급 증강 코드 생성"""
+        
+        advanced_code = f'''
+import cv2
+import numpy as np
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+from typing import Dict, List, Tuple
+
+class AdvancedAugmentationStrategy:
+    """
+    고급 증강 전략: 클래스별 맞춤 + Domain Adaptation
+    EDA 분석 결과를 반영한 지능형 증강
+    """
+    
+    def __init__(self):
+        self.vehicle_classes = {class_specific['vehicle_classes']['classes']}
+        self.document_classes = {class_specific['document_classes']['classes']}
+        self.minority_classes = {class_specific['minority_classes']['classes']}
+        
+    def get_class_specific_transforms(self, target_class: int, image_size: int = 512):
+        """클래스별 맞춤 증강 반환"""
+        
+        if target_class in self.vehicle_classes:
+            return self._get_vehicle_transforms(image_size)
+        elif target_class in self.minority_classes:
+            return self._get_minority_class_transforms(image_size)
+        else:
+            return self._get_document_transforms(image_size)
+    
+    def _get_vehicle_transforms(self, image_size: int):
+        """차량 관련 클래스 전용 증강"""
+        return A.Compose([
+            A.Resize(image_size, image_size),
+            
+            # 차량 특화 증강
+            A.RandomBrightnessContrast(
+                brightness_limit=0.4,  # 강화된 밝기 조정
+                contrast_limit=0.4, 
+                p=0.9
+            ),
+            
+            # 색상 지터링 강화 (다양한 조명)
+            A.ColorJitter(
+                brightness=0.3,
+                contrast=0.3, 
+                saturation=0.3,
+                hue=0.1,
+                p=0.7
+            ),
+            
+            # 노이즈 증가 (실제 촬영 환경)
+            A.OneOf([
+                A.GaussNoise(var_limit=(20, 80)),  # 더 강한 노이즈
+                A.MultiplicativeNoise(multiplier=[0.8, 1.2]),
+            ], p=0.6),
+            
+            # 원근 변형 감소 (이미 다양한 각도)
+            A.Perspective(scale=(0.02, 0.05), p=0.2),
+            
+            A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ToTensorV2()
+        ])
+    
+    def _get_document_transforms(self, image_size: int):
+        """문서 클래스 전용 증강"""
+        return A.Compose([
+            A.Resize(image_size, image_size),
+            
+            # 문서 특화 증강
+            A.RandomRotate90(p=0.4),
+            A.Rotate(limit=45, p=0.8, border_mode=cv2.BORDER_CONSTANT),  # 더 강한 회전
+            
+            # 원근 변형 강화 (스캔 왜곡)
+            A.Perspective(scale=(0.1, 0.2), p=0.5),
+            
+            # 블러 추가 (Test 데이터 대응)
+            A.OneOf([
+                A.MotionBlur(blur_limit=5),  # 더 강한 블러
+                A.GaussianBlur(blur_limit=5),
+            ], p=0.4),
+            
+            # 대비 조정
+            A.RandomBrightnessContrast(
+                brightness_limit=0.3,
+                contrast_limit=0.4,  # 문서 품질 다양화
+                p=0.8
+            ),
+            
+            A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ToTensorV2()
+        ])
+    
+    def _get_minority_class_transforms(self, image_size: int):
+        """소수 클래스 전용 강화 증강"""
+        return A.Compose([
+            A.Resize(image_size, image_size),
+            
+            # 기본 증강
+            A.RandomRotate90(p=0.4),
+            A.Rotate(limit=30, p=0.7, border_mode=cv2.BORDER_CONSTANT),
+            
+            A.RandomBrightnessContrast(
+                brightness_limit=0.3,
+                contrast_limit=0.3,
+                p=0.8
+            ),
+            
+            # 소수 클래스 특화 증강
+            A.OneOf([
+                A.ElasticTransform(p=0.3),  # 탄성 변형
+                A.GridDistortion(p=0.3),    # 격자 왜곡
+                A.OpticalDistortion(p=0.3), # 광학 왜곡
+            ], p=0.5),
+            
+            # 강화된 노이즈
+            A.OneOf([
+                A.GaussNoise(var_limit=(15, 60)),
+                A.MultiplicativeNoise(multiplier=[0.85, 1.15]),
+            ], p=0.6),
+            
+            A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ToTensorV2()
+        ])
+
+# Domain Adaptation 클래스
+class DomainAdaptationAugmentation:
+    """Train 데이터를 Test 데이터 특성에 맞게 적응시키는 증강"""
+    
+    def __init__(self, adaptation_epoch: int = 0):
+        self.adaptation_epoch = adaptation_epoch
+        
+    def get_domain_adapted_transforms(self, image_size: int = 512):
+        """에포크에 따른 점진적 Domain Adaptation"""
+        
+        transforms = [A.Resize(image_size, image_size)]
+        
+        # 점진적 적응 스케줄
+        if self.adaptation_epoch >= 10:
+            # 밝기 적응 (Test 데이터가 더 밝음)
+            transforms.append(
+                A.RandomBrightnessContrast(
+                    brightness_limit=0.4,  # Test 대응
+                    contrast_limit=0.2,
+                    p=0.8
+                )
+            )
+        
+        if self.adaptation_epoch >= 20:
+            # 블러 적응 (Test 데이터가 더 흐림)
+            transforms.append(
+                A.OneOf([
+                    A.MotionBlur(blur_limit=4),
+                    A.GaussianBlur(blur_limit=4),
+                ], p=0.5)
+            )
+        
+        if self.adaptation_epoch >= 30:
+            # 노이즈 적응 (Test 데이터가 노이즈 적음)
+            transforms.append(
+                A.GaussNoise(var_limit=(5, 25), p=0.3)  # 약한 노이즈
+            )
+        
+        transforms.extend([
+            A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ToTensorV2()
+        ])
+        
+        return A.Compose(transforms)
+
+# 사용 예시
+def get_advanced_transforms(target_class: int, epoch: int = 0, image_size: int = 512):
+    """
+    고급 증강 전략 통합 함수
+    
+    Args:
+        target_class: 클래스 ID (0-16)
+        epoch: 현재 에포크 (Domain Adaptation용)
+        image_size: 입력 이미지 크기
+    """
+    
+    # 클래스별 맞춤 증강
+    class_aug = AdvancedAugmentationStrategy()
+    base_transforms = class_aug.get_class_specific_transforms(target_class, image_size)
+    
+    # Domain Adaptation 추가
+    if epoch > 10:  # 일정 에포크 후 적응 시작
+        domain_aug = DomainAdaptationAugmentation(epoch)
+        domain_transforms = domain_aug.get_domain_adapted_transforms(image_size)
+        return domain_transforms
+    
+    return base_transforms
+'''
+        
+        # 파일 저장
+        with open(self.output_dir / 'advanced_augmentation.py', 'w', encoding='utf-8') as f:
+            f.write(advanced_code)
+        
+        print(f"🎨 고급 증강 코드 저장: {self.output_dir / 'advanced_augmentation.py'}")
+    
+    def _pseudo_labeling_strategy(self):
+        """Pseudo Labeling 및 Progressive Labeling 전략"""
+        print("\n=== 🏷️ 8-3. Pseudo Labeling 전략 ===")
+        
+        # Pseudo Labeling 전략 설계
+        pseudo_strategy = self._design_pseudo_labeling_strategy()
+        
+        # Progressive Labeling 코드 생성
+        self._generate_pseudo_labeling_code(pseudo_strategy)
+        
+        print("🏷️ Pseudo Labeling 전략 완료")
+    
+    def _design_pseudo_labeling_strategy(self):
+        """Pseudo Labeling 전략 설계"""
+        print("🎯 Pseudo Labeling 전략 설계 중...")
+        
+        strategy = {
+            "confidence_thresholds": {
+                "conservative": 0.95,  # 초기 단계
+                "moderate": 0.90,      # 중간 단계  
+                "aggressive": 0.85     # 후반 단계
+            },
+            "progressive_schedule": {
+                "phase_1": {
+                    "epochs": "1-10",
+                    "threshold": 0.95,
+                    "max_pseudo_ratio": 0.1,  # 전체의 10%만
+                    "strategy": "Only highest confidence"
+                },
+                "phase_2": {
+                    "epochs": "11-20", 
+                    "threshold": 0.90,
+                    "max_pseudo_ratio": 0.2,  # 전체의 20%
+                    "strategy": "Class-balanced selection"
+                },
+                "phase_3": {
+                    "epochs": "21-30",
+                    "threshold": 0.85,
+                    "max_pseudo_ratio": 0.3,  # 전체의 30%
+                    "strategy": "Uncertainty-based selection"
+                }
+            },
+            "quality_control": {
+                "ensemble_agreement": "3개 이상 모델이 동일 예측",
+                "consistency_check": "TTA 결과 일치도 > 0.9",
+                "class_balance": "각 클래스별 최대 pseudo 샘플 수 제한",
+                "outlier_detection": "Isolation Forest로 이상치 제거"
+            },
+            "implementation_details": {
+                "update_frequency": "매 에포크마다",
+                "pseudo_weight": "0.5 (실제 데이터 대비)",
+                "mixup_with_real": True,
+                "teacher_student": "EMA 업데이트 (α=0.999)"
+            }
+        }
+        
+        return strategy
+    
+    def _generate_pseudo_labeling_code(self, strategy):
+        """Pseudo Labeling 구현 코드 생성"""
+        
+        pseudo_code = f'''
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+from typing import Dict, List, Tuple, Optional
+from sklearn.ensemble import IsolationForest
+from collections import defaultdict, Counter
+
+class PseudoLabelingManager:
+    """
+    Progressive Pseudo Labeling 관리자
+    EDA 분석 결과를 반영한 지능형 pseudo labeling
+    """
+    
+    def __init__(self, 
+                 num_classes: int = 17,
+                 confidence_thresholds: Dict = {strategy['confidence_thresholds']},
+                 class_weights: Optional[Dict] = None):
+        
+        self.num_classes = num_classes
+        self.confidence_thresholds = confidence_thresholds
+        self.class_weights = class_weights or {{}}
+        
+        # Progressive schedule
+        self.progressive_schedule = {strategy['progressive_schedule']}
+        
+        # Quality control
+        self.isolation_forest = IsolationForest(contamination=0.1, random_state=42)
+        self.pseudo_history = defaultdict(list)
+        
+    def get_current_phase(self, epoch: int) -> Dict:
+        """현재 에포크에 따른 phase 정보 반환"""
+        if epoch <= 10:
+            return self.progressive_schedule['phase_1']
+        elif epoch <= 20:
+            return self.progressive_schedule['phase_2']
+        else:
+            return self.progressive_schedule['phase_3']
+    
+    def select_pseudo_labels(self, 
+                           predictions: torch.Tensor,
+                           confidences: torch.Tensor,
+                           features: torch.Tensor,
+                           epoch: int) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+        Pseudo label 선택
+        
+        Args:
+            predictions: 모델 예측 (N, num_classes)
+            confidences: 예측 신뢰도 (N,)
+            features: 특성 벡터 (N, feature_dim)
+            epoch: 현재 에포크
+            
+        Returns:
+            selected_indices: 선택된 샘플 인덱스
+            pseudo_labels: Pseudo label
+        """
+        
+        phase = self.get_current_phase(epoch)
+        threshold = phase['threshold']
+        max_ratio = phase['max_pseudo_ratio']
+        
+        # 1. 신뢰도 기반 필터링
+        high_conf_mask = confidences > threshold
+        
+        if not high_conf_mask.any():
+            return torch.tensor([]), torch.tensor([])
+        
+        # 2. 이상치 제거
+        if len(features[high_conf_mask]) > 10:  # 최소 샘플 수 확보
+            outlier_mask = self._detect_outliers(features[high_conf_mask])
+            high_conf_mask[high_conf_mask.clone()] = ~outlier_mask
+        
+        # 3. 클래스 균형 고려 선택
+        selected_indices = self._balanced_selection(
+            predictions[high_conf_mask],
+            confidences[high_conf_mask], 
+            high_conf_mask.nonzero().squeeze(),
+            max_ratio,
+            phase['strategy']
+        )
+        
+        if len(selected_indices) == 0:
+            return torch.tensor([]), torch.tensor([])
+        
+        pseudo_labels = predictions[selected_indices].argmax(dim=1)
+        
+        # 4. 품질 기록
+        self._record_pseudo_quality(selected_indices, pseudo_labels, confidences[selected_indices])
+        
+        return selected_indices, pseudo_labels
+    
+    def _detect_outliers(self, features: torch.Tensor) -> torch.Tensor:
+        """Isolation Forest를 사용한 이상치 탐지"""
+        features_np = features.detach().cpu().numpy()
+        outlier_pred = self.isolation_forest.fit_predict(features_np)
+        return torch.tensor(outlier_pred == -1)  # -1이 이상치
+    
+    def _balanced_selection(self, 
+                          predictions: torch.Tensor,
+                          confidences: torch.Tensor,
+                          indices: torch.Tensor,
+                          max_ratio: float,
+                          strategy: str) -> torch.Tensor:
+        """클래스 균형을 고려한 선택"""
+        
+        max_samples = int(len(predictions) * max_ratio)
+        pred_classes = predictions.argmax(dim=1)
+        
+        if strategy == "Only highest confidence":
+            # 단순히 신뢰도 높은 순으로
+            _, top_indices = confidences.topk(min(max_samples, len(confidences)))
+            return indices[top_indices]
+            
+        elif strategy == "Class-balanced selection":
+            # 클래스별 균등 선택
+            selected = []
+            samples_per_class = max_samples // self.num_classes
+            
+            for class_id in range(self.num_classes):
+                class_mask = pred_classes == class_id
+                if not class_mask.any():
+                    continue
+                    
+                class_confidences = confidences[class_mask]
+                class_indices = indices[class_mask]
+                
+                # 해당 클래스에서 가장 신뢰도 높은 샘플들 선택
+                num_select = min(samples_per_class, len(class_confidences))
+                _, top_class_indices = class_confidences.topk(num_select)
+                selected.extend(class_indices[top_class_indices].tolist())
+            
+            return torch.tensor(selected)
+            
+        elif strategy == "Uncertainty-based selection":
+            # 불확실성 기반 선택 (entropy 사용)
+            entropies = -torch.sum(predictions * torch.log(predictions + 1e-8), dim=1)
+            
+            # 신뢰도와 불확실성의 균형
+            combined_score = confidences - 0.1 * entropies  # 불확실성 페널티
+            _, selected_indices = combined_score.topk(min(max_samples, len(combined_score)))
+            
+            return indices[selected_indices]
+        
+        return torch.tensor([])
+    
+    def _record_pseudo_quality(self, indices: torch.Tensor, labels: torch.Tensor, confidences: torch.Tensor):
+        """Pseudo label 품질 기록"""
+        for idx, label, conf in zip(indices, labels, confidences):
+            self.pseudo_history[int(idx)].append({{
+                'label': int(label),
+                'confidence': float(conf),
+                'timestamp': len(self.pseudo_history[int(idx)])
+            }})
+    
+    def get_pseudo_statistics(self) -> Dict:
+        """Pseudo labeling 통계 반환"""
+        if not self.pseudo_history:
+            return {{'total_pseudo_samples': 0}}
+        
+        total_samples = len(self.pseudo_history)
+        label_distribution = Counter()
+        avg_confidence = 0
+        
+        for sample_history in self.pseudo_history.values():
+            if sample_history:
+                latest = sample_history[-1]
+                label_distribution[latest['label']] += 1
+                avg_confidence += latest['confidence']
+        
+        avg_confidence /= total_samples if total_samples > 0 else 1
+        
+        return {{
+            'total_pseudo_samples': total_samples,
+            'label_distribution': dict(label_distribution),
+            'average_confidence': avg_confidence,
+            'class_balance_ratio': max(label_distribution.values()) / min(label_distribution.values()) if label_distribution else 0
+        }}
+
+class EnsemblePseudoLabeling:
+    """앙상블 기반 고품질 Pseudo Labeling"""
+    
+    def __init__(self, models: List[nn.Module], agreement_threshold: int = 3):
+        self.models = models
+        self.agreement_threshold = agreement_threshold
+        
+    def get_ensemble_pseudo_labels(self, 
+                                 dataloader,
+                                 device: torch.device) -> Tuple[List, List, List]:
+        """
+        앙상블 합의 기반 pseudo label 생성
+        
+        Returns:
+            pseudo_data: 선택된 데이터
+            pseudo_labels: 합의된 라벨  
+            confidence_scores: 신뢰도 점수
+        """
+        
+        all_predictions = []
+        all_data = []
+        
+        # 각 모델의 예측 수집
+        for model in self.models:
+            model.eval()
+            predictions = []
+            data_batch = []
+            
+            with torch.no_grad():
+                for batch_data, _ in dataloader:
+                    batch_data = batch_data.to(device)
+                    outputs = model(batch_data)
+                    predictions.append(F.softmax(outputs, dim=1))
+                    data_batch.append(batch_data)
+            
+            all_predictions.append(torch.cat(predictions, dim=0))
+            if not all_data:  # 첫 번째 모델에서만 데이터 저장
+                all_data = torch.cat(data_batch, dim=0)
+        
+        # 앙상블 합의 확인
+        ensemble_preds = torch.stack(all_predictions)  # (num_models, num_samples, num_classes)
+        pred_labels = ensemble_preds.argmax(dim=2)  # (num_models, num_samples)
+        
+        pseudo_data, pseudo_labels, confidence_scores = [], [], []
+        
+        for i in range(pred_labels.shape[1]):  # 각 샘플에 대해
+            sample_preds = pred_labels[:, i]
+            
+            # 합의 확인 (과반수 이상 동일 예측)
+            label_counts = torch.bincount(sample_preds, minlength=17)
+            max_count = label_counts.max()
+            
+            if max_count >= self.agreement_threshold:
+                agreed_label = label_counts.argmax()
+                
+                # 해당 라벨에 대한 평균 신뢰도
+                confidence = ensemble_preds[:, i, agreed_label].mean()
+                
+                pseudo_data.append(all_data[i])
+                pseudo_labels.append(agreed_label)
+                confidence_scores.append(confidence)
+        
+        return pseudo_data, pseudo_labels, confidence_scores
+
+# 사용 예시
+def setup_pseudo_labeling(num_classes: int = 17, class_weights: Dict = None):
+    """Pseudo Labeling 설정"""
+    
+    # EDA에서 계산된 클래스 가중치 사용
+    if class_weights is None:
+        class_weights = {class_weights if hasattr(self, 'class_weights') else {}}
+    
+    pseudo_manager = PseudoLabelingManager(
+        num_classes=num_classes,
+        class_weights=class_weights
+    )
+    
+    return pseudo_manager
+
+def progressive_training_with_pseudo_labels(model, 
+                                          train_loader,
+                                          pseudo_manager: PseudoLabelingManager,
+                                          epoch: int):
+    """Progressive Pseudo Labeling을 적용한 훈련"""
+    
+    # 현재 phase 확인
+    phase = pseudo_manager.get_current_phase(epoch)
+    print(f"Epoch {{epoch}}: {{phase['strategy']}} (threshold={{phase['threshold']}})")
+    
+    # Pseudo label 선택 및 훈련에 적용하는 로직은
+    # 실제 훈련 루프에서 구현
+    
+    return phase
+'''
+        
+        # 파일 저장
+        with open(self.output_dir / 'pseudo_labeling_strategy.py', 'w', encoding='utf-8') as f:
+            f.write(pseudo_code)
+        
+        # 전략 JSON 저장
+        with open(self.output_dir / 'pseudo_labeling_config.json', 'w', encoding='utf-8') as f:
+            json.dump(strategy, f, indent=2, ensure_ascii=False)
+        
+        print(f"🏷️ Pseudo Labeling 코드 저장: {self.output_dir / 'pseudo_labeling_strategy.py'}")
+        print(f"🏷️ Pseudo Labeling 설정 저장: {self.output_dir / 'pseudo_labeling_config.json'}")
 
 
 def main():

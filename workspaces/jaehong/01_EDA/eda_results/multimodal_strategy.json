@@ -1,0 +1,281 @@
+{
+  "metadata_features": {
+    "filename_patterns": {},
+    "class_characteristics": {
+      "0": {
+        "name": "account_number",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "1": {
+        "name": "application_for_payment_of_pregnancy_medical_expenses",
+        "count": 46,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "2": {
+        "name": "car_dashboard",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "3": {
+        "name": "confirmation_of_admission_and_discharge",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "4": {
+        "name": "diagnosis",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "5": {
+        "name": "driver_lisence",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "6": {
+        "name": "medical_bill_receipts",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "7": {
+        "name": "medical_outpatient_certificate",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "8": {
+        "name": "national_id_card",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "9": {
+        "name": "passport",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "10": {
+        "name": "payment_confirmation",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "11": {
+        "name": "pharmaceutical_receipt",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "12": {
+        "name": "prescription",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "13": {
+        "name": "resume",
+        "count": 74,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "14": {
+        "name": "statement_of_opinion",
+        "count": 50,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "15": {
+        "name": "vehicle_registration_certificate",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      },
+      "16": {
+        "name": "vehicle_registration_plate",
+        "count": 100,
+        "avg_filename_length": 20.0,
+        "has_underscore_ratio": 0.0
+      }
+    },
+    "total_samples": 1570
+  },
+  "correlations": {
+    "0": {
+      "class_name": "account_number",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "1": {
+      "class_name": "application_for_payment_of_pregnancy_medical_expenses",
+      "is_vehicle_related": false,
+      "sample_count": 46,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "2": {
+      "class_name": "car_dashboard",
+      "is_vehicle_related": true,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 640,
+      "special_preprocessing": true
+    },
+    "3": {
+      "class_name": "confirmation_of_admission_and_discharge",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "4": {
+      "class_name": "diagnosis",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "5": {
+      "class_name": "driver_lisence",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "6": {
+      "class_name": "medical_bill_receipts",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "7": {
+      "class_name": "medical_outpatient_certificate",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "8": {
+      "class_name": "national_id_card",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "9": {
+      "class_name": "passport",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "10": {
+      "class_name": "payment_confirmation",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "11": {
+      "class_name": "pharmaceutical_receipt",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "12": {
+      "class_name": "prescription",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "13": {
+      "class_name": "resume",
+      "is_vehicle_related": false,
+      "sample_count": 74,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "14": {
+      "class_name": "statement_of_opinion",
+      "is_vehicle_related": false,
+      "sample_count": 50,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "15": {
+      "class_name": "vehicle_registration_certificate",
+      "is_vehicle_related": false,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 512,
+      "special_preprocessing": false
+    },
+    "16": {
+      "class_name": "vehicle_registration_plate",
+      "is_vehicle_related": true,
+      "sample_count": 100,
+      "filename_complexity": 20.0,
+      "recommended_input_size": 640,
+      "special_preprocessing": true
+    }
+  },
+  "architecture": {
+    "image_branch": {
+      "backbone": "EfficientNetV2-S",
+      "input_sizes": [
+        512,
+        640
+      ],
+      "feature_dim": 1280
+    },
+    "metadata_branch": {
+      "features": [
+        "filename_length",
+        "has_underscore",
+        "class_prior_probability",
+        "image_aspect_ratio"
+      ],
+      "architecture": "MLP(4 -> 64 -> 32)",
+      "feature_dim": 32
+    },
+    "fusion_strategy": {
+      "method": "concatenation + attention",
+      "combined_dim": 1312,
+      "fusion_layers": "Linear(1312 -> 512 -> 17)"
+    },
+    "training_strategy": {
+      "loss_weighting": "dynamic (0.8 * image_loss + 0.2 * metadata_loss)",
+      "separate_learning_rates": {
+        "image_branch": 0.0001,
+        "metadata_branch": 0.001,
+        "fusion_layer": 0.001
+      }
+    }
+  }
+}
