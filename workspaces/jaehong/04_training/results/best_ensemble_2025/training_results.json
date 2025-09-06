@@ -1,0 +1,8 @@
+{
+  "best_score": 0.90625,
+  "final_epoch": 9,
+  "experiment_name": "best_ensemble_2025",
+  "strategy": "diverse_ensemble",
+  "target_score": 0.95,
+  "timestamp": "2025-09-06T00:06:03.134877"
+}
