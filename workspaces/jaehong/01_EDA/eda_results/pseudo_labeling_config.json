@@ -1,0 +1,39 @@
+{
+  "confidence_thresholds": {
+    "conservative": 0.95,
+    "moderate": 0.9,
+    "aggressive": 0.85
+  },
+  "progressive_schedule": {
+    "phase_1": {
+      "epochs": "1-10",
+      "threshold": 0.95,
+      "max_pseudo_ratio": 0.1,
+      "strategy": "Only highest confidence"
+    },
+    "phase_2": {
+      "epochs": "11-20",
+      "threshold": 0.9,
+      "max_pseudo_ratio": 0.2,
+      "strategy": "Class-balanced selection"
+    },
+    "phase_3": {
+      "epochs": "21-30",
+      "threshold": 0.85,
+      "max_pseudo_ratio": 0.3,
+      "strategy": "Uncertainty-based selection"
+    }
+  },
+  "quality_control": {
+    "ensemble_agreement": "3개 이상 모델이 동일 예측",
+    "consistency_check": "TTA 결과 일치도 > 0.9",
+    "class_balance": "각 클래스별 최대 pseudo 샘플 수 제한",
+    "outlier_detection": "Isolation Forest로 이상치 제거"
+  },
+  "implementation_details": {
+    "update_frequency": "매 에포크마다",
+    "pseudo_weight": "0.5 (실제 데이터 대비)",
+    "mixup_with_real": true,
+    "teacher_student": "EMA 업데이트 (α=0.999)"
+  }
+}
