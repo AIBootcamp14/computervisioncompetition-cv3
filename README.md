@@ -378,6 +378,6 @@ def evaluate(loader, model, loss_fn, device):
 
 ## etc
 
-### Meeting Log
+### 모델 설명
 
-- _Insert your meeting log link like Notion or Google Docs_
+- docs 폴더 안에 있는 모델 `reamme.md`파일에 모델에 대한 추가적인 설명이 기재되어 있습니다.
