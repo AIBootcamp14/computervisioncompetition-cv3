@@ -1,0 +1,68 @@
+# Training Configuration
+# 훈련 관련 설정 파일
+
+# 모델 설정
+model:
+  name: "resnet34"  # timm 모델 이름
+  pretrained: true
+  num_classes: 17
+
+# 훈련 설정
+training:
+  epochs: 10
+  batch_size: 32
+  learning_rate: 1e-3
+  optimizer: "adam"
+  loss_function: "cross_entropy"
+  
+# 데이터 설정
+data:
+  img_size: 224
+  train_csv: "data/train.csv"
+  train_dir: "data/train/"
+  test_csv: "data/sample_submission.csv"
+  test_dir: "data/test/"
+  num_workers: 4
+  
+# 데이터 증강
+augmentation:
+  train:
+    resize: [224, 224]
+    normalize:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+    # 추가 증강 기법들
+    # random_crop: [224, 224]
+    # horizontal_flip: 0.5
+    # rotation: 15
+    
+  test:
+    resize: [224, 224]
+    normalize:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+# 검증 설정
+validation:
+  split_ratio: 0.2
+  random_seed: 42
+  
+# 로깅 설정
+logging:
+  console: true
+  file: true
+  log_dir: "logs/"
+  precision: 4
+  
+# 모델 저장 설정
+model_saving:
+  save_best: true
+  save_dir: "models/"
+  early_stopping:
+    patience: 5
+    metric: "val_f1"  # val_loss, val_acc, val_f1
+
+# 하드웨어 설정
+hardware:
+  device: "auto"  # auto, cpu, cuda
+  mixed_precision: false
