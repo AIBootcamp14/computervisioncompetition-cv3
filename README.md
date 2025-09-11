@@ -299,8 +299,78 @@ e.g.
 ### Leader Board
 <img width="600" height="450" alt="스크린샷 2025-09-12 오전 2 00 52" src="https://github.com/user-attachments/assets/60944f26-dd7c-457a-a983-6957f2b9f9ad" />
 
-- _Insert Leader Board Capture_
-- _Write rank and score_
+### 추후 개선 사항
+
+-----
+
+#### 1\. 데이터 분석 없는 데이터 증강
+
+  - 먼저 데이터를 깊이 있게 분석하지 않고, 일반적으로 효과가 좋다고 알려진 증강 기법부터 적용함.
+  - **아쉬운 점**: 클래스별 데이터 분포나 이미지 특징을 먼저 분석했다면, 각 클래스의 약점을 보완하는 맞춤형 증강을 적용할 수 있었을 것임.
+
+<!-- end list -->
+
+```python
+# baseline_code_github_version.ipynb
+def get_transforms(img_size):
+    trn_transform = A.Compose([
+        A.Resize(height=img_size, width=img_size),
+        # ...다양한 증강 기법 일괄 적용...
+        A.HorizontalFlip(p=0.5),
+        A.VerticalFlip(p=0.5),
+        A.ShiftScaleRotate(p=0.7),
+        # ...
+    ])
+```
+
+-----
+
+#### 2\. 온라인 증강 활용 미숙
+
+  - `ImageDataset`에서 실시간으로 데이터를 변형하는 온라인 증강을 사용했지만, 데이터의 양을 늘리기 위해서 오프라인 증강(파일로 저장)을 무리하게 시도함.
+  - **아쉬운 점**: `DataLoader`의 `Weighted Sampler` 등을 함께 사용하면, 특정 클래스를 더 자주 학습시켜 데이터 불균형 문제를 완화할 수 있다는 점을 간과함.
+
+<!-- end list -->
+
+```python
+# baseline_code_github_version.ipynb
+class ImageDataset(Dataset):
+    def __getitem__(self, idx):
+        # ...
+        # 실시간으로 데이터 증강을 적용하고 있었음
+        if self.transform:
+            image = self.transform(image=image)['image']
+        return image, target
+```
+
+-----
+
+#### 3\. Confusion Matrix 파악이 늦음
+
+  - `evaluate` 함수에서 모델의 성능을 전반적인 F1 점수로만 평가함.
+  - **아쉬운 점**: Confusion Matrix를 확인하지 않아, 모델이 어떤 클래스들을 서로 혼동하는지 구체적인 약점을 파악하지 못함. 이로 인해 어떤 데이터를 추가로 보강해야 할지 방향을 잡기 어려웠음.
+
+<!-- end list -->
+
+```python
+# baseline_code_github_version.ipynb
+def evaluate(loader, model, loss_fn, device):
+    # ...
+    # 예측값(preds_list)과 정답(targets_list)이 있었지만
+    # 전체 F1 점수 계산에만 사용함
+    val_f1 = f1_score(targets_list, preds_list, average='macro')
+    return {"val_loss": val_loss / len(loader), "val_f1": val_f1}
+```
+<img width="700" height="600" alt="confusion_matrix_swin_large_patch4_window7_224_fold_0" src="https://github.com/user-attachments/assets/8b54e38b-1547-45a3-b586-22f1b518ca3b" />
+
+- 차후에는 이러한 결과를 보고 추가적인 접근을 시도할 예정.
+
+-----
+
+#### 4\. 주피터 노트북에서의 협업 문제
+
+  - 모든 코드를 하나의 `.ipynb` 파일에서 관리하여 팀원들과의 협업이 어려웠음.
+  - **아쉬운 점**: Git으로 버전을 관리할 때 충돌(Merge Conflict)이 잦았고, 기능별로 코드를 분리(모듈화)하기 어려워 역할 분담이 비효율적이었음.
 
 ### Presentation
 
