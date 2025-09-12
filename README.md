@@ -3,10 +3,10 @@
 
 <div align="center">
 
-| ![박재홍](https://avatars.githubusercontent.com/u/156163982?v=4) | ![이준영](https://avatars.githubusercontent.com/u/156163982?v=4) | ![김동준](https://avatars.githubusercontent.com/u/156163982?v=4) | ![정예은](https://avatars.githubusercontent.com/u/156163982?v=4) |
+| <img src="https://avatars.githubusercontent.com/u/66048976?v=4" width="120" style="border-radius:50%;"> | ![이준영](https://avatars.githubusercontent.com/u/156163982?v=4) | ![김동준](https://avatars.githubusercontent.com/u/156163982?v=4) | ![정예은](https://avatars.githubusercontent.com/u/156163982?v=4) |
 | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: |
-|           [박재홍](https://github.com/UpstageAILab)           |           [이준영](https://github.com/junyeonglee1111)           |           [김동준](https://github.com/rafiki3816)           |           [정예은](https://github.com/UpstageAILab)           |
-|                          팀장, 담당 역할                           |                            부팀장                            |                            담당 역할                             |                            담당 역할                             |
+|           [박재홍](https://github.com/woghd8503)           |           [이준영](https://github.com/junyeonglee1111)           |           [김동준](https://github.com/rafiki3816)           |           [정예은](https://github.com/UpstageAILab)           |
+|                          팀장                           |                            부팀장                            |                            담당 역할                             |                            담당 역할                             |
 
 </div>
 
