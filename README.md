@@ -5,7 +5,7 @@
 
 | ![박재홍](https://avatars.githubusercontent.com/u/156163982?v=4) | ![이준영](https://avatars.githubusercontent.com/u/156163982?v=4) | ![김동준](https://avatars.githubusercontent.com/u/156163982?v=4) | ![정예은](https://avatars.githubusercontent.com/u/156163982?v=4) |
 | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: |
-|           [박재홍](https://github.com/UpstageAILab)           |           [이준영](https://github.com/junyeonglee1111)           |           [김동준](https://github.com/UpstageAILab)           |           [정예은](https://github.com/UpstageAILab)           |
+|           [박재홍](https://github.com/UpstageAILab)           |           [이준영](https://github.com/junyeonglee1111)           |           [김동준](https://github.com/rafiki3816)           |           [정예은](https://github.com/UpstageAILab)           |
 |                          팀장, 담당 역할                           |                            부팀장                            |                            담당 역할                             |                            담당 역할                             |
 
 </div>
