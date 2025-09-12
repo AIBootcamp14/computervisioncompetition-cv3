@@ -3,7 +3,7 @@
 
 <div align="center">
 
-| <img src="https://avatars.githubusercontent.com/u/66048976?v=4" width="120" style="border-radius:50%;"> | <img src="https://avatars.githubusercontent.com/u/168383346?v=4" width="120" style="border-radius:50%;">  |<img src="https://avatars.githubusercontent.com/u/213417897?v=4" width="120" style="border-radius:50%;">  | ![정예은](https://avatars.githubusercontent.com/u/156163982?v=4) |
+| <img src="https://avatars.githubusercontent.com/u/66048976?v=4" width="120" style="border-radius:50%;"> | <img src="https://avatars.githubusercontent.com/u/168383346?v=4" width="120" style="border-radius:50%;">  |<img src="https://avatars.githubusercontent.com/u/213417897?v=4" width="120" style="border-radius:50%;">  | <img src="https://github.com/wjddpdms03.png?size=120" width="120" alt="정예은"> |
 | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: |
 |           [박재홍](https://github.com/woghd8503)           |           [이준영](https://github.com/junyeonglee1111)           |           [김동준](https://github.com/rafiki3816)           |           [정예은](https://github.com/wjddpdms03)           |
 |                          팀장                           |                            부팀장                            |                            담당 역할                             |                            팀원                             |
