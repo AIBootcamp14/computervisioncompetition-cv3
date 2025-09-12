@@ -129,22 +129,18 @@ $$F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}$$
 
 ### Directory
 
-- _Insert your directory structure_
-
-e.g.
 ```
 ├── code
-│   ├── jupyter_notebooks
-│   │   └── model_train.ipynb
-│   └── train.py
-├── docs
-│   ├── pdf
-│   │   └── (Template) [패스트캠퍼스] Upstage AI Lab 1기_그룹 스터디 .pptx
-│   └── paper
-└── input
-    └── data
-        ├── eval
-        └── train
+│   ├── baseline_code_github_version.ipynb
+│   └── readme.md
+├── data
+│   ├── meta.csv
+│   ├── sample.submission.csv  
+│   └── train.csv
+└── workspases
+    ├── readme.md
+    ├── requirements.txt
+    └── .gitignore
 ```
 
 ## 3. Data descrption
