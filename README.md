@@ -380,4 +380,4 @@ def evaluate(loader, model, loss_fn, device):
 
 ### 모델 설명
 
-- docs 폴더 안에 있는 모델 `reamme.md`파일에 모델에 대한 추가적인 설명이 기재되어 있습니다.
+- docs 폴더 안에 있는 모델 [readme.md](https://github.com/AIBootcamp14/computervisioncompetition-cv3/blob/main/code/readme.md) 파일에 모델에 대한 추가적인 설명이 기재되어 있습니다.
